@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile 'io.dstore:dstore-sdk-java:1.2.6'
+    compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork19'
+
+    testCompile 'junit:junit:4.12'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = 3.1
+}
