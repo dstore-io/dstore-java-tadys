@@ -3,19 +3,9 @@ package tadys;
 import io.dstore.elastic.ElasticServiceGrpc;
 import io.dstore.engine.EngineGrpc;
 import io.dstore.engine.procedures.EngineProcGrpc;
-import io.dstore.helper.DstoreCredentials;
-import io.grpc.Channel;
-import io.grpc.ClientInterceptors;
-import io.grpc.auth.ClientAuthInterceptor;
-import io.grpc.internal.ManagedChannelImpl;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NegotiationType;
-import io.grpc.netty.NettyChannelBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,48 +26,24 @@ public class ConnectionTadys {
 
     @Test
     public void testProcedureConnection() throws Exception {
-        ManagedChannelImpl channel = NettyChannelBuilder.forAddress(TadyHelper.URL, TadyHelper.PORT)
-                .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
-                .negotiationType(NegotiationType.TLS).build();
-
-        Channel wrappedChannel = ClientInterceptors.intercept(channel, new ClientAuthInterceptor(new DstoreCredentials("publicuser", "public"), Executors.newSingleThreadExecutor()));
-
-
-        EngineProcGrpc.EngineProcBlockingStub stub = EngineProcGrpc.newBlockingStub(wrappedChannel).withDeadlineAfter(200, TimeUnit.SECONDS);
-
+        EngineProcGrpc.EngineProcBlockingStub stub = EngineProcGrpc.newBlockingStub(ConnectionHolder.getAdminChannel())
+                .withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
 
     }
 
     @Test
     public void testEngineConnection() throws Exception {
-        ManagedChannelImpl channel = NettyChannelBuilder.forAddress(TadyHelper.URL, TadyHelper.PORT)
-                .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
-                .negotiationType(NegotiationType.TLS).build();
-
-        Channel wrappedChannel = ClientInterceptors.intercept(channel, new ClientAuthInterceptor(new DstoreCredentials("publicuser", "public"), Executors.newSingleThreadExecutor()));
-
-
-        EngineGrpc.EngineBlockingStub stub = EngineGrpc.newBlockingStub(wrappedChannel).withDeadlineAfter(200, TimeUnit.SECONDS);
-
+        EngineGrpc.EngineBlockingStub stub = EngineGrpc.newBlockingStub(ConnectionHolder.getPublicChannel())
+                .withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
     }
 
     @Test
     public void testElasticServiceConnection() throws Exception {
-        ManagedChannelImpl channel = NettyChannelBuilder.forAddress(TadyHelper.URL, TadyHelper.PORT)
-                .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
-                .negotiationType(NegotiationType.TLS).build();
-
-        Channel wrappedChannel = ClientInterceptors.intercept(channel, new ClientAuthInterceptor(new DstoreCredentials("publicuser", "public"), Executors.newSingleThreadExecutor()));
-
-
-        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ElasticServiceGrpc.newBlockingStub(wrappedChannel).withDeadlineAfter(200, TimeUnit.SECONDS);
-
+        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ElasticServiceGrpc.newBlockingStub(
+                ConnectionHolder.getPublicChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
     }
-
-
-
 
 }
