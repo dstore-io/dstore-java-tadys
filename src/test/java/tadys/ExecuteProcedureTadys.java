@@ -22,7 +22,7 @@ public class ExecuteProcedureTadys {
     // @see http://dev.dstore.io:8080/wiki/mi_DatatypeTest_Ad
 
     @Test
-    public void testExecuteProcedureWithoutParameter()throws Exception {
+    public void testExecuteProcedureWithoutParameter() throws Exception {
 
         /* Executing the procedure "mi_DatatypeTest_Ad" without setting any parameters */
 
@@ -34,8 +34,8 @@ public class ExecuteProcedureTadys {
         boolean resultWithResultRowsExists = false;
 
         /* Iterating over all result object, trying to find one which has rows - which represents (at least a part of) the actual result */
-        while(resultIterator.hasNext()){
-            if ( resultIterator.next().getRowCount() >  0){
+        while (resultIterator.hasNext()) {
+            if (resultIterator.next().getRowCount() > 0) {
                 resultWithResultRowsExists = true;
             }
         }
@@ -45,7 +45,7 @@ public class ExecuteProcedureTadys {
     }
 
     @Test
-    public void testExecuteProcedureWithParameter()throws Exception {
+    public void testExecuteProcedureWithParameter() throws Exception {
 
         /* Executing the procedure "mi_DatatypeTest_Ad",  setting a parameter which should cause that we don't get a result set  */
 
@@ -58,8 +58,8 @@ public class ExecuteProcedureTadys {
         boolean resultWithResultRowsExists = false;
 
         /* Iterating over all result object, trying to find one which has rows - which shouldn't exists because of "GetResultSet = false" */
-        while(resultIterator.hasNext()){
-            if ( resultIterator.next().getRowCount() >  0){
+        while (resultIterator.hasNext()) {
+            if (resultIterator.next().getRowCount() > 0) {
                 resultWithResultRowsExists = true;
             }
         }
@@ -69,7 +69,7 @@ public class ExecuteProcedureTadys {
     }
 
     @Test
-    public void testExecuteProcedureGetOutputParameters()throws Exception {
+    public void testExecuteProcedureGetOutputParameters() throws Exception {
 
         /* Executing the procedure "mi_DatatypeTest_Ad",  setting a parameter which should cause that output parameters are set after execution  */
 
@@ -84,11 +84,11 @@ public class ExecuteProcedureTadys {
         String testChar = null;
 
         /* Setting and checking output parameter value */
-        while(resultIterator.hasNext()){
+        while (resultIterator.hasNext()) {
 
             MiDatatypeTestAd.Response result = resultIterator.next();
 
-            if ( result.getTestChar().isInitialized() && result.getTestChar() != null ){
+            if (result.hasTestChar()) {
                 testChar = result.getTestChar().getValue().trim();
             }
         }
@@ -98,7 +98,7 @@ public class ExecuteProcedureTadys {
     }
 
     @Test
-    public void testGetAndProcessResultSet()throws Exception {
+    public void testGetAndProcessResultSet() throws Exception {
 
         /* Executing the procedure "mi_DatatypeTest_Ad" */
         Iterator<MiDatatypeTestAd.Response> resultIterator = ConnectionHolder.getAdminEngineProcStub().miDatatypeTestAd(
@@ -112,20 +112,20 @@ public class ExecuteProcedureTadys {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
         /* iterating over all results  */
-        while(resultIterator.hasNext()){
+        while (resultIterator.hasNext()) {
 
             MiDatatypeTestAd.Response result = resultIterator.next();
 
-            if (result.getRowCount() > 0 ){
+            if (result.getRowCount() > 0) {
                 /* if the result has rows it contains (a part) of the procedures result set */
-                for (MiDatatypeTestAd.Response.Row row  : result.getRowList()){
+                for (MiDatatypeTestAd.Response.Row row : result.getRowList()) {
                     /* we save some values of the procedures result in a map (hard coded column name as key) */
                     Map<String, Object> rowMap = new HashMap<String, Object>();
-                    rowMap.put( "test_text", row.getTestText().getValue().trim() );
-                    rowMap.put( "test_bit", row.getTestBit().getValue() );
-                    rowMap.put( "test_integer", row.getTestInteger().getValue() );
-                    rowMap.put( "test_datetime", ValuesHelper.toDate(row.getTestDatetime()) );
-                    rowMap.put( "test_decimal", ValuesHelper.toBigDecimal(row.getTestDecimal()) );
+                    rowMap.put("test_text", row.getTestText().getValue().trim());
+                    rowMap.put("test_bit", row.getTestBit().getValue());
+                    rowMap.put("test_integer", row.getTestInteger().getValue());
+                    rowMap.put("test_datetime", ValuesHelper.toDate(row.getTestDatetime()));
+                    rowMap.put("test_decimal", ValuesHelper.toBigDecimal(row.getTestDecimal()));
                     /* for each row we save a single map in a list */
                     resultList.add(rowMap);
                 }
@@ -140,15 +140,15 @@ public class ExecuteProcedureTadys {
 
         /* and we expect the following values */
         Assert.assertEquals("test text", resultList.get(0).get("test_text"));
-        Assert.assertEquals( true, resultList.get(0).get("test_bit"));
-        Assert.assertEquals( 17, resultList.get(0).get("test_integer"));
-        Assert.assertEquals( sdf.parse("23.05.2006 17:42:59:333"), resultList.get(0).get("test_datetime"));
-        Assert.assertEquals( new BigDecimal("-17.425923"), resultList.get(0).get("test_decimal"));
+        Assert.assertEquals(true, resultList.get(0).get("test_bit"));
+        Assert.assertEquals(17, resultList.get(0).get("test_integer"));
+        Assert.assertEquals(sdf.parse("23.05.2006 17:42:59:333"), resultList.get(0).get("test_datetime"));
+        Assert.assertEquals(new BigDecimal("-17.425923"), resultList.get(0).get("test_decimal"));
 
     }
 
     @Test
-    public void testGetAndProcessMessagesAfterProcedureError()throws Exception {
+    public void testGetAndProcessMessagesAfterProcedureError() throws Exception {
 
         /* Executing the procedure "mi_GetUnits" */
         Iterator<MiGetUnits.Response> resultIterator = ConnectionHolder.getAdminEngineProcStub().miGetUnits(
@@ -161,28 +161,27 @@ public class ExecuteProcedureTadys {
         List<String> messageList = new ArrayList<String>();
         String returnStatus = null;
 
-        try{
+        try {
             /* iterating over all results */
-            while(resultIterator.hasNext()){
+            while (resultIterator.hasNext()) {
                 MiGetUnits.Response result = resultIterator.next();
                 /* Before the expected exception (see below) there should be a message result we can process */
-                if (result.getMessageList() != null && result.getMessageList().size() > 0 ){
-                    for (ProcedureMessage.Message message :  result.getMessageList()){
+                if (result.getMessageList() != null && result.getMessageList().size() > 0) {
+                    for (ProcedureMessage.Message message : result.getMessageList()) {
                         messageList.add(message.getMessage());
                     }
                 }
             }
-        }
-        catch ( StatusRuntimeException ignore ){
+        } catch (StatusRuntimeException ignore) {
             /*  We expect an exception because of "setActive = 3" - in this case we set the return status  */
             returnStatus = ignore.getTrailers().get(Metadata.dstoreEngineReturnStatus);
         }
 
         /* The Return Status should be "-500" (invalid parameter) */
-        Assert.assertEquals( "-500", returnStatus );
+        Assert.assertEquals("-500", returnStatus);
 
         /* There should be a print message */
-        Assert.assertTrue( messageList.size() > 0);
+        Assert.assertTrue(messageList.size() > 0);
 
 
         /* And it should be the cause of the expected error */
