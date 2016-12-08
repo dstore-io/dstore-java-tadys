@@ -3,21 +3,10 @@ package tadys;
 import io.dstore.elastic.Elastic;
 import io.dstore.elastic.ElasticServiceGrpc;
 import io.dstore.elastic.item.FacetedNavigation;
-import io.dstore.helper.DstoreCredentials;
-import io.grpc.Channel;
-import io.grpc.ClientInterceptors;
-import io.grpc.auth.ClientAuthInterceptor;
-import io.grpc.internal.ManagedChannelImpl;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NegotiationType;
-import io.grpc.netty.NettyChannelBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by hwies on 11.10.16.
@@ -33,10 +22,10 @@ public class FacetedNavigationTadys {
     * */
 
     @Test
-    public void getAllProductsTady() throws Exception{
+    public void getAllProductsTady() throws Exception {
 
         /* First we need a "BlockinStub" again (a "ElasticServiceGrpc.ElasticServiceBlockingStub" to be accurate) */
-        ElasticServiceGrpc.ElasticServiceBlockingStub stub =  ConnectionHolder.getElasticServiceStub();
+        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ConnectionHolder.getElasticServiceStub();
 
         /* Now we can define the Request. First a real simple one... */
         FacetedNavigation.Request request = FacetedNavigation.Request.newBuilder()
@@ -58,9 +47,9 @@ public class FacetedNavigationTadys {
         /* Lets try to find out how many Items we have */
         int itemCount = -1;
         int totalItemCount = -1;
-        while( responses.hasNext() ){
+        while (responses.hasNext()) {
             FacetedNavigation.Response response = responses.next();
-            if (response.getItemCount() >  0 && response.getTotalHits() > 0 ){
+            if (response.getItemCount() > 0 && response.getTotalHits() > 0) {
                 itemCount = response.getItemCount();
 
                 /* TotalHits: (Number of all products and their variants)*/
@@ -72,12 +61,12 @@ public class FacetedNavigationTadys {
         Assert.assertEquals(50, itemCount);
 
         // Should be more then 50000 (yes, we have more then "just a few" test items !)
-        Assert.assertTrue( totalItemCount > 50000 );
+        Assert.assertTrue(totalItemCount > 50000);
 
     }
 
     @Test
-    public void getProductsforBaseQueryTady() throws Exception{
+    public void getProductsforBaseQueryTady() throws Exception {
 
         ElasticServiceGrpc.ElasticServiceBlockingStub stub = ConnectionHolder.getElasticServiceStub();
 
@@ -110,9 +99,9 @@ public class FacetedNavigationTadys {
         /* Lets try to find out how many Items we now have */
         int itemCount = -1;
         int totalItemCount = -1;
-        while( responses.hasNext() ){
+        while (responses.hasNext()) {
             FacetedNavigation.Response response = responses.next();
-            if (response.getItemCount() >  0 && response.getTotalHits() > 0 ){
+            if (response.getItemCount() > 0 && response.getTotalHits() > 0) {
                 itemCount = response.getItemCount();
 
                 /* TotalHits: (Number of all products and their variants)*/
@@ -124,10 +113,10 @@ public class FacetedNavigationTadys {
         Assert.assertEquals(50, itemCount);
 
         // Should be less then 50000 item now, because a whole lot of them are not of "type=boardgame" (see base query above)
-        Assert.assertTrue( totalItemCount < 50000 );
+        Assert.assertTrue(totalItemCount < 50000);
 
         // But there should be still at least more then 30000
-        Assert.assertTrue( totalItemCount > 30000 );
+        Assert.assertTrue(totalItemCount > 30000);
 
     }
 

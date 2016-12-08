@@ -6,8 +6,8 @@ repositories {
 
 
 dependencies {
-    compile 'io.dstore:dstore-sdk-java:1.2.6'
-    compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork19'
+    compile 'io.dstore:dstore-sdk-java:1.3.0'
+    compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork23'
 
     testCompile 'junit:junit:4.12'
 }

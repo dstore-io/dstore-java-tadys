@@ -3,7 +3,7 @@ package tadys;
 import io.dstore.engine.ProcedureMessage;
 import io.dstore.engine.procedures.MiDatatypeTestAd;
 import io.dstore.engine.procedures.MiGetUnits;
-import io.dstore.helper.Metadata;
+import io.dstore.helper.DstoreMetadata;
 import io.dstore.helper.ValuesHelper;
 import io.grpc.StatusRuntimeException;
 import org.junit.Assert;
@@ -174,7 +174,7 @@ public class ExecuteProcedureTadys {
             }
         } catch (StatusRuntimeException ignore) {
             /*  We expect an exception because of "setActive = 3" - in this case we set the return status  */
-            returnStatus = ignore.getTrailers().get(Metadata.dstoreEngineReturnStatus);
+            returnStatus = ignore.getTrailers().get(DstoreMetadata.ENGINE_RETURN_STATUS_KEY);
         }
 
         /* The Return Status should be "-500" (invalid parameter) */

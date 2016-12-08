@@ -26,7 +26,7 @@ public class ConnectionTadys {
 
     @Test
     public void testProcedureConnection() throws Exception {
-        EngineProcGrpc.EngineProcBlockingStub stub = EngineProcGrpc.newBlockingStub(ConnectionHolder.getAdminChannel())
+        EngineProcGrpc.EngineProcBlockingStub stub = EngineProcGrpc.newBlockingStub(ConnectionHolder.getChannel())
                 .withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
 
@@ -34,7 +34,7 @@ public class ConnectionTadys {
 
     @Test
     public void testEngineConnection() throws Exception {
-        EngineGrpc.EngineBlockingStub stub = EngineGrpc.newBlockingStub(ConnectionHolder.getPublicChannel())
+        EngineGrpc.EngineBlockingStub stub = EngineGrpc.newBlockingStub(ConnectionHolder.getChannel())
                 .withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
     }
@@ -42,7 +42,7 @@ public class ConnectionTadys {
     @Test
     public void testElasticServiceConnection() throws Exception {
         ElasticServiceGrpc.ElasticServiceBlockingStub stub = ElasticServiceGrpc.newBlockingStub(
-                ConnectionHolder.getPublicChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
+                ConnectionHolder.getChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
     }
 
