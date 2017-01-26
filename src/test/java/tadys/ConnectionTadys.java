@@ -1,6 +1,6 @@
 package tadys;
 
-import io.dstore.elastic.ElasticServiceGrpc;
+import io.dstore.elastic.ElasticGrpc;
 import io.dstore.engine.EngineGrpc;
 import io.dstore.engine.procedures.EngineProcGrpc;
 import org.junit.Assert;
@@ -41,7 +41,7 @@ public class ConnectionTadys {
 
     @Test
     public void testElasticServiceConnection() throws Exception {
-        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ElasticServiceGrpc.newBlockingStub(
+        ElasticGrpc.ElasticBlockingStub stub = ElasticGrpc.newBlockingStub(
                 ConnectionHolder.getChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
         Assert.assertNotNull(stub);
     }

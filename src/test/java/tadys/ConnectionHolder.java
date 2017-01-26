@@ -1,12 +1,10 @@
 package tadys;
 
-import io.dstore.elastic.ElasticServiceGrpc;
+import io.dstore.elastic.ElasticGrpc;
 import io.dstore.engine.procedures.EngineProcGrpc;
+import io.dstore.helper.ChannelHelper;
 import io.dstore.helper.DstoreCredentials;
 import io.grpc.internal.ManagedChannelImpl;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NegotiationType;
-import io.grpc.netty.NettyChannelBuilder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,12 +23,8 @@ public class ConnectionHolder {
     private static ManagedChannelImpl channelInstance = null;
 
     public static ManagedChannelImpl getChannel() throws Exception {
-        if (channelInstance == null) {
-            channelInstance = NettyChannelBuilder.forAddress(ConnectionHolder.URL, ConnectionHolder.PORT)
-                    .sslContext(GrpcSslContexts.forClient().trustManager(ClassLoader.class.getResourceAsStream("/dstore-try-ca.pem")).build())
-                    // trust every certificate via : trustManager(InsecureTrustManagerFactory.INSTANCE).build())
-                    .negotiationType(NegotiationType.TLS).build();
-        }
+        if (channelInstance == null)
+            channelInstance = ChannelHelper.getSslChannel(ConnectionHolder.URL, ConnectionHolder.PORT, "/dstore-try-ca.pem");
 
         return channelInstance;
     }
@@ -45,8 +39,8 @@ public class ConnectionHolder {
         return EngineProcGrpc.newBlockingStub(getChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
     }
 
-    public static ElasticServiceGrpc.ElasticServiceBlockingStub getElasticServiceStub() throws Exception {
-        return ElasticServiceGrpc.newBlockingStub(getChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
+    public static ElasticGrpc.ElasticBlockingStub getElasticServiceStub() throws Exception {
+        return ElasticGrpc.newBlockingStub(getChannel()).withDeadlineAfter(200, TimeUnit.SECONDS);
 
     }
 

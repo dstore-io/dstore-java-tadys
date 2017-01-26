@@ -1,6 +1,6 @@
 package tadys;
 
-import io.dstore.engine.ProcedureMessage;
+import io.dstore.engine.Message;
 import io.dstore.engine.procedures.MiDatatypeTestAd;
 import io.dstore.engine.procedures.MiGetUnits;
 import io.dstore.helper.DstoreMetadata;
@@ -167,7 +167,7 @@ public class ExecuteProcedureTadys {
                 MiGetUnits.Response result = resultIterator.next();
                 /* Before the expected exception (see below) there should be a message result we can process */
                 if (result.getMessageList() != null && result.getMessageList().size() > 0) {
-                    for (ProcedureMessage.Message message : result.getMessageList()) {
+                    for (Message message : result.getMessageList()) {
                         messageList.add(message.getMessage());
                     }
                 }

@@ -1,8 +1,9 @@
 package tadys;
 
-import io.dstore.elastic.Elastic;
-import io.dstore.elastic.ElasticServiceGrpc;
-import io.dstore.elastic.item.FacetedNavigation;
+import io.dstore.elastic.BoolQuery;
+import io.dstore.elastic.ElasticGrpc;
+import io.dstore.elastic.Query;
+import io.dstore.elastic.item.ItemGet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,10 +26,10 @@ public class FacetedNavigationTadys {
     public void getAllProductsTady() throws Exception {
 
         /* First we need a "BlockinStub" again (a "ElasticServiceGrpc.ElasticServiceBlockingStub" to be accurate) */
-        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ConnectionHolder.getElasticServiceStub();
+        ElasticGrpc.ElasticBlockingStub stub = ConnectionHolder.getElasticServiceStub();
 
         /* Now we can define the Request. First a real simple one... */
-        FacetedNavigation.Request request = FacetedNavigation.Request.newBuilder()
+        ItemGet.Request request = ItemGet.Request.newBuilder()
                 /* We want 50 Items per "page" */
                 .setSize(50)
                 /* and we want to start with page 1 (or Item 0) */
@@ -36,7 +37,7 @@ public class FacetedNavigationTadys {
                 .build();
 
         /* Executing the request and recieving the responses */
-        Iterator<FacetedNavigation.Response> responses = stub.facetedNavigation(request);
+        Iterator<ItemGet.Response> responses = stub.itemGet(request);
 
         /* We should have an iterator with all responses now */
         Assert.assertNotNull(responses);
@@ -48,7 +49,7 @@ public class FacetedNavigationTadys {
         int itemCount = -1;
         int totalItemCount = -1;
         while (responses.hasNext()) {
-            FacetedNavigation.Response response = responses.next();
+            ItemGet.Response response = responses.next();
             if (response.getItemCount() > 0 && response.getTotalHits() > 0) {
                 itemCount = response.getItemCount();
 
@@ -68,27 +69,27 @@ public class FacetedNavigationTadys {
     @Test
     public void getProductsforBaseQueryTady() throws Exception {
 
-        ElasticServiceGrpc.ElasticServiceBlockingStub stub = ConnectionHolder.getElasticServiceStub();
+        ElasticGrpc.ElasticBlockingStub stub = ConnectionHolder.getElasticServiceStub();
 
-        Elastic.Query.Terms typeFilter = Elastic.Query.Terms.newBuilder()
+        Query.Terms typeFilter = Query.Terms.newBuilder()
                 .setFieldName("87")
                 .addValue("boardgame")
                 .build();
 
          /* Another Request. This time we set a base query to filter the results by their "type" */
-        FacetedNavigation.Request request = FacetedNavigation.Request.newBuilder()
+        ItemGet.Request request = ItemGet.Request.newBuilder()
                 /* We want 50 Items per "page" */
                 .setSize(50)
                 /* and we want to start with page 1 (or Item 0) */
                 .setFrom(0)
                 .setBaseQuery(
-                        Elastic.BoolQuery.newBuilder()
-                                .addFilter(Elastic.Query.newBuilder().setTermsQuery(typeFilter))
+                        BoolQuery.newBuilder()
+                                .addFilter(Query.newBuilder().setTermsQuery(typeFilter))
                 )
                 .build();
 
         /* Executing the request and recieving the responses */
-        Iterator<FacetedNavigation.Response> responses = stub.facetedNavigation(request);
+        Iterator<ItemGet.Response> responses = stub.itemGet(request);
 
         /* Again we should have an iterator with all responses now */
         Assert.assertNotNull(responses);
@@ -100,7 +101,7 @@ public class FacetedNavigationTadys {
         int itemCount = -1;
         int totalItemCount = -1;
         while (responses.hasNext()) {
-            FacetedNavigation.Response response = responses.next();
+            ItemGet.Response response = responses.next();
             if (response.getItemCount() > 0 && response.getTotalHits() > 0) {
                 itemCount = response.getItemCount();
 
