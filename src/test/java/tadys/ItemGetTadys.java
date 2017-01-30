@@ -12,7 +12,7 @@ import java.util.Iterator;
 /**
  * Created by hwies on 11.10.16.
  */
-public class FacetedNavigationTadys {
+public class ItemGetTadys {
 
     /*
     * TODO: Link !
